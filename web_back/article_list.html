@@ -242,8 +242,8 @@
 
 
                         <td class="text-center">
-                            <a href="post-edit.html?id=995" class="btn btn-default btn-xs">编辑</a>
-                            <a href="javascript:deleteTr( 995 );" class="btn btn-danger btn-xs">删除</a>
+                            <a href="javascript:;" class="btn btn-default btn-xs">编辑</a>
+                            <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
                         </td>
                     </tr>
 
@@ -272,9 +272,9 @@
 
     <script>
         // 设置左侧菜单
-        $('#release_btn').click(function () {
-            window.parent.setMenu(1, 1);
-        })
+        // $('#release_btn').click(function () {
+        //     window.parent.setMenu(1, 1);
+        // })
     </script>
     <script id="tmp_cate" type="text/html">
         <option value="">所有分类</option>
@@ -298,8 +298,8 @@
 
 
             <td class="text-center">
-                <a href="post-edit.html?id=995" class="btn btn-default btn-xs" data-id="{{v.id}}">编辑</a>
-                <a href="javascript:deleteTr( 995 );" class="btn btn-danger btn-xs" data-id="{{v.id}}">删除</a>
+                <a href="javascript:;" class="btn btn-default btn-xs " id="btn-add" data-id="{{v.id}}">编辑</a>
+                <a href="javascript:;" class="btn btn-danger btn-xs" id = 'btn-del' data-id="{{v.id}}">删除</a>
             </td>
         </tr>
         {{/each}}
@@ -337,7 +337,6 @@
                         type: article_name
                     },
                     success: function (backData) {
-                        console.log(backData);
                         if (backData.code == 200) {
                             $('tbody').html(template('tmp_list', backData))
 
@@ -351,6 +350,7 @@
                                 }));
                               };
                            };
+                           window.totalPages = totalPages;
                         }
                     });
             }
@@ -369,30 +369,34 @@
                 prev: '上一页',
                 onPageClick: function (event, page) {
                     $('#page-content').text('Page ' + page);
+                    //将页码保留到window,删除文章时使用
+                    window.page = page;
                     getArticle(page);
                 }
             }
             $article_list.twbsPagination(defaultOpts);
+            //删除按钮点击事件
+             $('tbody').on('click','#btn-del',function(){
+                 //通过自定义属性获取ID
+                var articleID = $(this).attr('data-id');
+                //发送ajax请求删除文章
+                $.ajax({
+                    url : 'http://localhost:8000/admin/article_delete',
+                    data : {
+                        id : articleID
+                    },
+                    success : function(backData){
+                        //  删除成功后重新渲染页面,将当前页码传入,渲染后还在当前的页面
+                        if(backData.code == 200){
+                            getArticle(window.page);
+                        }
+                    }
+                })
+             });
 
 
 
-
-            // var $pagination = $('selector');
-            // var defaultOpts = {
-            //     totalPages: 20
-            // };
-            // $pagination.twbsPagination(defaultOpts);
-            // $.ajax({
-            //     ...,
-            //     success: function (data) {
-            //         var totalPages = data.newTotalPages;
-            //         var currentPage = $pagination.twbsPagination('getCurrentPage');
-            //         $pagination.twbsPagination('destroy');
-            //         $pagination.twbsPagination($.extend({}, defaultOpts, {
-            //             startPage: currentPage,
-            //             totalPages: totalPages
-            //         }));
-            //     }
+           
 
 
         });
