@@ -316,14 +316,14 @@
                 }
             })
             //点击筛选按钮,获取option的文本内容,发送ajax请求
-            $('#btnSearch').on('click', function (e,page) {
+            $('#btnSearch').on('click', function (e, page) {
                 // 阻止默认行为
                 e.preventDefault();
                 // 获取文章分类与type
-              
+
                 getArticle(page);
             })
-            function getArticle(page){
+            function getArticle(page) {
                 var article_name = $('#selCategory').val();
                 var article_type = $('#selStatus').val();
                 var page = page || 1;
@@ -348,11 +348,11 @@
                                     startPage: currentPage,
                                     totalPages: totalPages
                                 }));
-                              };
-                           };
-                           window.totalPages = totalPages;
-                        }
-                    });
+                            };
+                        };
+                        window.totalPages = totalPages;
+                    }
+                });
             }
             //页面一加载就触发筛选的点击事件,加载所以文章内容
             $('#btnSearch').click();
@@ -376,27 +376,31 @@
             }
             $article_list.twbsPagination(defaultOpts);
             //删除按钮点击事件
-             $('tbody').on('click','#btn-del',function(){
-                 //通过自定义属性获取ID
+            $('tbody').on('click', '#btn-del', function () {
+                //通过自定义属性获取ID
                 var articleID = $(this).attr('data-id');
                 //发送ajax请求删除文章
                 $.ajax({
-                    url : 'http://localhost:8000/admin/article_delete',
-                    data : {
-                        id : articleID
+                    url: 'http://localhost:8000/admin/article_delete',
+                    data: {
+                        id: articleID
                     },
-                    success : function(backData){
+                    success: function (backData) {
                         //  删除成功后重新渲染页面,将当前页码传入,渲染后还在当前的页面
-                        if(backData.code == 200){
+                        if (backData.code == 200) {
                             getArticle(window.page);
                         }
                     }
                 })
-             });
+            });
+            //点击编辑按钮跳转页面
+            $('tbody').on('click', '#btn-add', function () {
+                var articleID = $(this).attr('data-id');
+                window.location.href = './article_edit.html?id=' + articleID;
+            });
 
 
 
-           
 
 
         });
