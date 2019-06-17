@@ -15,6 +15,15 @@
     <script src="js/jedate/js/jedate.js"></script>
     <script src="js/tinymce/js/tinymce/tinymce.min.js"></script>
     <script src="js/tinymce/js/tinymce_setup.js"></script>
+    <script src="./js/template-web.js"></script>
+    <script src=""></script>
+    <style>
+        #yuLan {
+            width: 160px;
+            height: 90px;
+            display: none;
+        }
+    </style>
 </head>
 
 <body>
@@ -27,19 +36,20 @@
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">文章标题：</label>
                     <div class="col-sm-10">
-                        <input type="email" class="form-control" id="inputEmail3" placeholder="文章标题">
+                        <input type="text" name="title" class="form-control" id="inputEmail3" placeholder="文章标题">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="inputPassword3" class="col-sm-2 control-label">文章封面：</label>
                     <div class="col-sm-10">
-                        <input type="file" id="exampleInputFile">
+                        <img src="#" alt="" id="yuLan">
+                        <input name="cover" type="file" id="exampleInputFile">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">文章类别：</label>
                     <div class="col-sm-4">
-                        <select class="form-control">
+                        <select class="form-control cate" name="type">
                             <option>1</option>
                             <option>2</option>
                             <option>3</option>
@@ -53,7 +63,7 @@
                     <div class="col-sm-4">
 
                         <div class="input-group">
-                            <input type="text" class="form-control" placeholder="YYYY-MM-DD" id="dateinput">
+                            <input type="text" name="date" class="form-control" placeholder="YYYY-MM-DD" id="dateinput">
                             <span class="input-group-btn">
                                 <button class="btn btn-default" type="button"
                                     onclick="jeDate('#dateinput',{trigger:false,format: 'YYYY-MM-DD'})"><i
@@ -79,21 +89,56 @@
             </form>
         </div>
     </div>
- <script>
-    //   $('.btn-issue').on('click',function(){
+    <script id='tmp_cate' type="text/html">
+        {{each data v}}
+        <option  name = "{{v.id}}">{{v.name}}</option>
+        {{/each}}
+      
+      </script>
+    <script>
+        //发送ajax请求获取分类信息
+        //发送ajax请求,获取文章类别信息,渲染到分类列表
+        $.ajax({
+            url: 'http://localhost:8000/admin/category_search',
+            success: function (backData) {
+                if (backData.code == 200) {
+                    $('.cate').html(template('tmp_cate', backData));
+                }
+            }
+        })
+        //选择图片文件预览功能
+        
+        $('#exampleInputFile').on('change', function () {
+            var url = URL.createObjectURL(this.files[0]);
+            $('#yuLan').attr('src', url).css('display', 'block');
 
-    //       $.ajax({
-    //           type : 'post',
-    //           url : 'http://localhost:8000/admin/article_publish',
-    //           contentType : false,
-    //           processData : false,
+        })
+        //发布按钮点击事件
+        $('.btn-issue').on('click', function (e) {
+            e.preventDefault();
+            var formData = new FormData($('form')[0]);
+             formData.content = tinyMCE.activeEditor.getContent();
+             formData.state = '已发布';
 
-    //       })
-    //   })  
- 
- 
- 
- </script>
+            //发送发布文章Ajax请求
+            $.ajax({
+                type: 'post',
+                url: 'http://localhost:8000/admin/article_publish',
+                contentType: false,
+                processData: false,
+                data: formData,
+                success: function (backData) {
+                    console.log(backData);
+                    if (backData.code == 201) {
+                        alert('发布成功!');
+                    }
+                }
+            })
+        })
+
+
+
+    </script>
 </body>
 
 </html>
