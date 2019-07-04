@@ -229,7 +229,7 @@
            {{else}}
            <li>
             {{/if}}
-                <a href="#" data-id = "{{$value.id}}"  class= 'aaa'><img src="{{$value.cover}}" alt=""></a>
+                <a href="#"><img src="{{$value.cover}}" alt=""></a>
                 <p>{{$value.title}}</p>
             </li>
         {{/each}}
@@ -252,11 +252,7 @@
                    }
                }
            })
-           $('.focus_list').on('click','.aaa',function(){
-               //通过自定义属性获取id
-               var id = $(this).attr('data-id');
-               window.location.href = './article.html?id='+id;
-           })
+
     </script>
 </body>
 

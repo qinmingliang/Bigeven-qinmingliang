@@ -118,7 +118,7 @@
             e.preventDefault();
             var formData = new FormData($('form')[0]);
              formData.content = tinyMCE.activeEditor.getContent();
-             formData.state = '草稿';
+             formData.state = '已发布';
 
             //发送发布文章Ajax请求
             $.ajax({
